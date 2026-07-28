@@ -13,7 +13,11 @@ import {
   Printer, 
   Clock, 
   MapPin, 
-  ClipboardList 
+  ClipboardList,
+  Bell,
+  TrendingUp,
+  BarChart3,
+  DollarSign
 } from 'lucide-react';
 import './App.css';
 
@@ -192,9 +196,21 @@ export default function App() {
       {/* Main Content Area */}
       <div className="main-content">
         <header className="header">
-          <h1 className="header-title" style={{ textTransform: 'capitalize' }}>{currentTab} Portal</h1>
+          <h1 className="header-title" style={{ textTransform: 'capitalize', fontSize: '24px' }}>{currentTab} Portal</h1>
           <div className="header-actions">
-            <span className="badge badge-info">{user.role} Privilege</span>
+            {/* Notification Bell Widget */}
+            <div className="notification-bell" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }} title="Operational Notifications">
+              <Bell size={18} style={{ color: 'var(--text-muted)' }} />
+              <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-danger)', boxShadow: '0 0 8px var(--color-danger)' }}></span>
+            </div>
+            
+            {/* User Profile Pill Widget */}
+            <div className="profile-pill" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)' }}></div>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{user.name}</span>
+            </div>
+
+            <span className="badge badge-info" style={{ padding: '6px 12px', fontSize: '12px' }}>{user.role} Privilege</span>
           </div>
         </header>
 
@@ -532,7 +548,125 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '24px', marginTop: '24px' }}>
+      {/* Analytics Dashboard Panel */}
+      <div className="glass-card" style={{ marginBottom: '24px', padding: '24px 28px' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#fff', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <BarChart3 size={18} style={{ color: 'var(--color-primary)' }} /> Operations Analytics & Trends
+        </h3>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          {/* Chart 1: Sales & Revenue Trend (SVG Line Area Chart) */}
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '18px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <DollarSign size={14} style={{ color: 'var(--color-success)' }} /> Monthly Sales & Revenue
+              </span>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--text-muted)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }}></span> Sales</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-success)' }}></span> Revenue</span>
+              </div>
+            </div>
+            {/* SVG Chart */}
+            <div style={{ position: 'relative', height: '140px' }}>
+              <svg viewBox="0 0 400 130" width="100%" height="100%">
+                <defs>
+                  <linearGradient id="grad-sales" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.3"/>
+                    <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="grad-rev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-success)" stopOpacity="0.25"/>
+                    <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0"/>
+                  </linearGradient>
+                </defs>
+                {/* Grid Lines */}
+                <line x1="10" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="55" x2="390" y2="55" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="90" x2="390" y2="90" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="120" x2="390" y2="120" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                
+                {/* Area under curves */}
+                <path d="M 10,120 L 10,95 L 80,80 L 160,50 L 240,65 L 320,30 L 390,15 L 390,120 Z" fill="url(#grad-sales)" />
+                <path d="M 10,120 L 10,110 L 80,95 L 160,75 L 240,85 L 320,55 L 390,40 L 390,120 Z" fill="url(#grad-rev)" />
+                
+                {/* Lines */}
+                <path d="M 10,95 L 80,80 L 160,50 L 240,65 L 320,30 L 390,15" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" />
+                <path d="M 10,110 L 80,95 L 160,75 L 240,85 L 320,55 L 390,40" fill="none" stroke="var(--color-success)" strokeWidth="2" strokeDasharray="3,3" />
+                
+                {/* Data Points */}
+                <circle cx="160" cy="50" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
+                <circle cx="320" cy="30" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
+                <circle cx="390" cy="15" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
+                
+                <circle cx="320" cy="55" r="3.5" fill="var(--color-success)" stroke="#090d16" strokeWidth="1.5" />
+                <circle cx="390" cy="40" r="3.5" fill="var(--color-success)" stroke="#090d16" strokeWidth="1.5" />
+                
+                {/* Labels */}
+                <text x="10" y="130" fill="var(--text-muted)" fontSize="8">Jan</text>
+                <text x="80" y="130" fill="var(--text-muted)" fontSize="8">Feb</text>
+                <text x="160" y="130" fill="var(--text-muted)" fontSize="8">Mar</text>
+                <text x="240" y="130" fill="var(--text-muted)" fontSize="8">Apr</text>
+                <text x="320" y="130" fill="var(--text-muted)" fontSize="8">May</text>
+                <text x="380" y="130" fill="var(--text-muted)" fontSize="8">Jun</text>
+              </svg>
+              {/* Overlay Tooltip */}
+              <div style={{ position: 'absolute', top: '15px', right: '40px', padding: '4px 8px', backgroundColor: 'rgba(13,20,35,0.95)', border: '1px solid var(--color-primary)', borderRadius: '4px', fontSize: '9.5px', color: '#fff', pointerEvents: 'none' }}>
+                Peak: +145% Revenue
+              </div>
+            </div>
+          </div>
+
+          {/* Chart 2: Inventory Stock Distribution (SVG Bar Chart) */}
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '18px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <TrendingUp size={14} style={{ color: 'var(--color-info)' }} /> Stock Distribution Status
+              </span>
+              <span style={{ fontSize: '11px', color: 'var(--color-warning)', fontWeight: 600 }}>2 Items Low Stock</span>
+            </div>
+            {/* SVG Bar Chart */}
+            <div style={{ position: 'relative', height: '140px' }}>
+              <svg viewBox="0 0 400 130" width="100%" height="100%">
+                {/* Horizontal grid lines */}
+                <line x1="10" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="55" x2="390" y2="55" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="90" x2="390" y2="90" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                <line x1="10" y1="120" x2="390" y2="120" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+
+                {/* Bars */}
+                {/* Bar 1 - Raw Materials */}
+                <rect x="30" y="40" width="22" height="80" rx="3" fill="var(--color-primary)" opacity="0.85" />
+                <text x="41" y="32" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">80%</text>
+                
+                {/* Bar 2 - Electronics */}
+                <rect x="110" y="70" width="22" height="50" rx="3" fill="var(--color-info)" opacity="0.85" />
+                <text x="121" y="62" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">50%</text>
+
+                {/* Bar 3 - Packaging */}
+                <rect x="190" y="25" width="22" height="95" rx="3" fill="var(--color-success)" opacity="0.85" />
+                <text x="201" y="17" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">95%</text>
+
+                {/* Bar 4 - Finished Goods */}
+                <rect x="270" y="95" width="22" height="25" rx="3" fill="var(--color-warning)" opacity="0.85" />
+                <text x="281" y="87" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">25%</text>
+
+                {/* Bar 5 - Spare Parts */}
+                <rect x="350" y="105" width="22" height="15" rx="3" fill="var(--color-danger)" opacity="0.85" />
+                <text x="361" y="97" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">15%</text>
+
+                {/* Labels */}
+                <text x="41" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Raw</text>
+                <text x="121" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Elec</text>
+                <text x="201" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Pack</text>
+                <text x="281" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Finish</text>
+                <text x="361" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Spare</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '24px' }}>
         {/* Recent Challans Panel */}
         <div className="glass-card">
           <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
