@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import './App.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://mini-erp-crm-71ea.onrender.com/api';
 
 // --- TS Interfaces ---
 interface User {
