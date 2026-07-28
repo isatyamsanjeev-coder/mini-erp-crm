@@ -529,9 +529,7 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
       const avg = categoryGroups[cat].total / categoryGroups[cat].count;
       return Math.min(Math.round((avg / 200) * 100), 100); // Percentage relative to a safe 200 unit cap
     }
-    // Default fallback values if database is empty so there is a nice visual guide
-    const fallbacks: { [key: string]: number } = { 'Raw Materials': 75, 'Electronics': 40, 'Packaging': 90, 'Finished': 30, 'Spares': 15 };
-    return fallbacks[cat] || 0;
+    return 0;
   });
 
   if (loading) return <div style={{ color: 'var(--text-muted)', padding: '20px' }}>Loading operational statistics...</div>;
