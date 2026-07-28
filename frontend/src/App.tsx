@@ -412,6 +412,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
     challans: 0
   });
   const [recentChallans, setRecentChallans] = useState<Challan[]>([]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
+  const [challansList, setChallansList] = useState<Challan[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -446,6 +448,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           challans: challanCount
         });
 
+        setProductsList(products);
+        setChallansList(challans);
         setRecentChallans(challans.slice(0, 4));
       } catch (err) {
         console.error('Failed to load dashboard metrics', err);
@@ -456,6 +460,79 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
 
     loadDashboardData();
   }, []);
+
+  // --- Dynamic Chart 1 Calculations: Sales & Revenue Trend (Last 6 Months) ---
+  const getMonthsArray = () => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const result = [];
+    const d = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+      result.push({
+        name: months[m.getMonth()],
+        index: m.getMonth(),
+        year: m.getFullYear(),
+        sales: 0,
+        revenue: 0
+      });
+    }
+    return result;
+  };
+
+  const monthlyData = getMonthsArray();
+  challansList.forEach(ch => {
+    if (ch.status === 'Confirmed') {
+      const date = new Date(ch.createdAt);
+      const chMonth = date.getMonth();
+      const chYear = date.getFullYear();
+      
+      const bucket = monthlyData.find(m => m.index === chMonth && m.year === chYear);
+      if (bucket) {
+        bucket.sales += ch.totalQuantity;
+        bucket.revenue += ch.totalQuantity * 150; // Estimated 150 Currency per unit
+      }
+    }
+  });
+
+  const maxSales = Math.max(...monthlyData.map(d => d.sales), 10);
+  const maxRevenue = Math.max(...monthlyData.map(d => d.revenue), 1500);
+
+  const getSalesY = (val: number) => 120 - ((val / maxSales) * 90);
+  const getRevenueY = (val: number) => 120 - ((val / maxRevenue) * 90);
+
+  const salesPoints = monthlyData.map((d, i) => `${[10, 80, 160, 240, 320, 390][i]},${getSalesY(d.sales)}`);
+  const revenuePoints = monthlyData.map((d, i) => `${[10, 80, 160, 240, 320, 390][i]},${getRevenueY(d.revenue)}`);
+
+  const salesPath = `M ` + salesPoints.join(' L ');
+  const revenuePath = `M ` + revenuePoints.join(' L ');
+  const salesAreaPath = `${salesPath} L 390,120 L 10,120 Z`;
+  const revenueAreaPath = `${revenuePath} L 390,120 L 10,120 Z`;
+
+  // --- Dynamic Chart 2 Calculations: Inventory Stock Distribution by Category ---
+  const categoryGroups: { [key: string]: { total: number, count: number } } = {};
+  productsList.forEach(p => {
+    const cat = p.category || 'General';
+    if (!categoryGroups[cat]) {
+      categoryGroups[cat] = { total: 0, count: 0 };
+    }
+    categoryGroups[cat].total += p.currentStock;
+    categoryGroups[cat].count += 1;
+  });
+
+  const uniqueCategories = Object.keys(categoryGroups);
+  const displayCategories = uniqueCategories.length > 0 
+    ? uniqueCategories.slice(0, 5) 
+    : ['Raw Materials', 'Electronics', 'Packaging', 'Finished', 'Spares'];
+
+  const displayCategoryValues = displayCategories.map(cat => {
+    if (categoryGroups[cat]) {
+      const avg = categoryGroups[cat].total / categoryGroups[cat].count;
+      return Math.min(Math.round((avg / 200) * 100), 100); // Percentage relative to a safe 200 unit cap
+    }
+    // Default fallback values if database is empty so there is a nice visual guide
+    const fallbacks: { [key: string]: number } = { 'Raw Materials': 75, 'Electronics': 40, 'Packaging': 90, 'Finished': 30, 'Spares': 15 };
+    return fallbacks[cat] || 0;
+  });
 
   if (loading) return <div style={{ color: 'var(--text-muted)', padding: '20px' }}>Loading operational statistics...</div>;
 
@@ -586,32 +663,32 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
                 <line x1="10" y1="120" x2="390" y2="120" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
                 
                 {/* Area under curves */}
-                <path d="M 10,120 L 10,95 L 80,80 L 160,50 L 240,65 L 320,30 L 390,15 L 390,120 Z" fill="url(#grad-sales)" />
-                <path d="M 10,120 L 10,110 L 80,95 L 160,75 L 240,85 L 320,55 L 390,40 L 390,120 Z" fill="url(#grad-rev)" />
+                <path d={salesAreaPath} fill="url(#grad-sales)" />
+                <path d={revenueAreaPath} fill="url(#grad-rev)" />
                 
                 {/* Lines */}
-                <path d="M 10,95 L 80,80 L 160,50 L 240,65 L 320,30 L 390,15" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" />
-                <path d="M 10,110 L 80,95 L 160,75 L 240,85 L 320,55 L 390,40" fill="none" stroke="var(--color-success)" strokeWidth="2" strokeDasharray="3,3" />
+                <path d={salesPath} fill="none" stroke="var(--color-primary)" strokeWidth="2.5" />
+                <path d={revenuePath} fill="none" stroke="var(--color-success)" strokeWidth="2" strokeDasharray="3,3" />
                 
                 {/* Data Points */}
-                <circle cx="160" cy="50" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
-                <circle cx="320" cy="30" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
-                <circle cx="390" cy="15" r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
-                
-                <circle cx="320" cy="55" r="3.5" fill="var(--color-success)" stroke="#090d16" strokeWidth="1.5" />
-                <circle cx="390" cy="40" r="3.5" fill="var(--color-success)" stroke="#090d16" strokeWidth="1.5" />
+                {monthlyData.map((d, i) => {
+                  const x = [10, 80, 160, 240, 320, 390][i];
+                  return (
+                    <g key={i}>
+                      <circle cx={x} cy={getSalesY(d.sales)} r="4.5" fill="var(--color-primary)" stroke="#090d16" strokeWidth="2" />
+                      <circle cx={x} cy={getRevenueY(d.revenue)} r="3.5" fill="var(--color-success)" stroke="#090d16" strokeWidth="1.5" />
+                    </g>
+                  );
+                })}
                 
                 {/* Labels */}
-                <text x="10" y="130" fill="var(--text-muted)" fontSize="8">Jan</text>
-                <text x="80" y="130" fill="var(--text-muted)" fontSize="8">Feb</text>
-                <text x="160" y="130" fill="var(--text-muted)" fontSize="8">Mar</text>
-                <text x="240" y="130" fill="var(--text-muted)" fontSize="8">Apr</text>
-                <text x="320" y="130" fill="var(--text-muted)" fontSize="8">May</text>
-                <text x="380" y="130" fill="var(--text-muted)" fontSize="8">Jun</text>
+                {monthlyData.map((d, i) => (
+                  <text key={i} x={[10, 80, 160, 240, 320, 390][i]} y="130" fill="var(--text-muted)" fontSize="8" textAnchor={i === 5 ? 'end' : i === 0 ? 'start' : 'middle'}>{d.name}</text>
+                ))}
               </svg>
               {/* Overlay Tooltip */}
               <div style={{ position: 'absolute', top: '15px', right: '40px', padding: '4px 8px', backgroundColor: 'rgba(13,20,35,0.95)', border: '1px solid var(--color-primary)', borderRadius: '4px', fontSize: '9.5px', color: '#fff', pointerEvents: 'none' }}>
-                Peak: +145% Revenue
+                Confirmed Sales: {monthlyData.reduce((acc, curr) => acc + curr.sales, 0)} units
               </div>
             </div>
           </div>
@@ -622,7 +699,9 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
               <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <TrendingUp size={14} style={{ color: 'var(--color-info)' }} /> Stock Distribution Status
               </span>
-              <span style={{ fontSize: '11px', color: 'var(--color-warning)', fontWeight: 600 }}>2 Items Low Stock</span>
+              <span style={{ fontSize: '11px', color: 'var(--color-warning)', fontWeight: 600 }}>
+                {stats.lowStock} Items Low Stock
+              </span>
             </div>
             {/* SVG Bar Chart */}
             <div style={{ position: 'relative', height: '140px' }}>
@@ -633,33 +712,23 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
                 <line x1="10" y1="90" x2="390" y2="90" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
                 <line x1="10" y1="120" x2="390" y2="120" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
 
-                {/* Bars */}
-                {/* Bar 1 - Raw Materials */}
-                <rect x="30" y="40" width="22" height="80" rx="3" fill="var(--color-primary)" opacity="0.85" />
-                <text x="41" y="32" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">80%</text>
-                
-                {/* Bar 2 - Electronics */}
-                <rect x="110" y="70" width="22" height="50" rx="3" fill="var(--color-info)" opacity="0.85" />
-                <text x="121" y="62" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">50%</text>
-
-                {/* Bar 3 - Packaging */}
-                <rect x="190" y="25" width="22" height="95" rx="3" fill="var(--color-success)" opacity="0.85" />
-                <text x="201" y="17" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">95%</text>
-
-                {/* Bar 4 - Finished Goods */}
-                <rect x="270" y="95" width="22" height="25" rx="3" fill="var(--color-warning)" opacity="0.85" />
-                <text x="281" y="87" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">25%</text>
-
-                {/* Bar 5 - Spare Parts */}
-                <rect x="350" y="105" width="22" height="15" rx="3" fill="var(--color-danger)" opacity="0.85" />
-                <text x="361" y="97" fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">15%</text>
-
-                {/* Labels */}
-                <text x="41" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Raw</text>
-                <text x="121" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Elec</text>
-                <text x="201" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Pack</text>
-                <text x="281" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Finish</text>
-                <text x="361" y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle">Spare</text>
+                {/* Dynamic Category Bars */}
+                {displayCategories.map((cat, i) => {
+                  const pct = displayCategoryValues[i];
+                  const x = 30 + (i * 75);
+                  const height = (pct / 100) * 90;
+                  const y = 120 - height;
+                  const colors = ['var(--color-primary)', 'var(--color-info)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-danger)'];
+                  return (
+                    <g key={cat}>
+                      <rect x={x} y={y} width="22" height={Math.max(height, 2)} rx="3" fill={colors[i % colors.length]} opacity="0.85" />
+                      <text x={x + 11} y={y - 8} fill="#fff" fontSize="8" textAnchor="middle" fontWeight="600">{pct}%</text>
+                      <text x={x + 11} y="130" fill="var(--text-muted)" fontSize="8" textAnchor="middle" title={cat}>
+                        {cat.length > 8 ? cat.substring(0, 7) + '..' : cat}
+                      </text>
+                    </g>
+                  );
+                })}
               </svg>
             </div>
           </div>
