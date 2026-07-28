@@ -591,8 +591,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
             <div>
               <div className="stat-label">CRM Accounts</div>
               <div className="stat-value">{stats.customers}</div>
-              <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                ▲ +12% this month
+              <div style={{ fontSize: '11px', color: stats.customers > 0 ? '#34d399' : 'var(--text-muted)', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                {stats.customers > 0 ? '▲ +12% this month' : '• No accounts yet'}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -608,8 +608,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           <div>
             <div className="stat-label">Catalog Products</div>
             <div className="stat-value">{stats.products}</div>
-            <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
-              ▲ +4% this month
+            <div style={{ fontSize: '11px', color: stats.products > 0 ? '#34d399' : 'var(--text-muted)', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              {stats.products > 0 ? '▲ +4% this month' : '• No products yet'}
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -625,7 +625,7 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
             <div className="stat-label">Low Stock Alerts</div>
             <div className="stat-value" style={{ color: stats.lowStock > 0 ? 'var(--color-danger)' : '#fff' }}>{stats.lowStock}</div>
             <div style={{ fontSize: '11px', color: stats.lowStock > 0 ? '#f87171' : '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
-              {stats.lowStock > 0 ? '▲ check warehouse' : '▼ -5% decrease'}
+              {stats.lowStock > 0 ? '▲ check warehouse' : '✔ Stock levels optimal'}
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -640,8 +640,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           <div>
             <div className="stat-label">Sales Challans</div>
             <div className="stat-value">{stats.challans}</div>
-            <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
-              ▲ +8% this month
+            <div style={{ fontSize: '11px', color: stats.challans > 0 ? '#34d399' : 'var(--text-muted)', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              {stats.challans > 0 ? '▲ +8% this month' : '• No transactions yet'}
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
