@@ -690,3 +690,88 @@ label {
     border-bottom: 1px solid #ddd !important;
   }
 }
+
+/* Premium Dashboard UI styling utilities */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-success);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  background-color: rgba(99, 102, 241, 0.08);
+  color: #fff;
+  transition: all 0.25s ease;
+  outline: none;
+}
+.quick-action-btn:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+.quick-action-btn.secondary {
+  border-color: var(--border-color);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.quick-action-btn.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+.sparkline {
+  margin-left: 12px;
+}
+.stock-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.stock-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.stock-bar-fill.normal {
+  background: linear-gradient(90deg, var(--color-info), var(--color-success));
+}
+.stock-bar-fill.warning {
+  background: linear-gradient(90deg, var(--color-warning), var(--color-danger));
+  animation: pulse-warn 1.5s infinite;
+}
+@keyframes pulse-warn {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+

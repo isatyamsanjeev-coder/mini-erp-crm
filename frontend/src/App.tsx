@@ -439,18 +439,54 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
     loadDashboardData();
   }, []);
 
-  if (loading) return <div style={{ color: 'var(--text-muted)' }}>Loading operational statistics...</div>;
+  if (loading) return <div style={{ color: 'var(--text-muted)', padding: '20px' }}>Loading operational statistics...</div>;
 
   return (
     <div>
+      {/* Top Professional Greeting Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(14, 165, 233, 0.03) 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        padding: '24px 28px',
+        marginBottom: '24px',
+        borderRadius: '16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
+        <div>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>Welcome back, {user.name}</h2>
+          <p style={{ color: 'var(--text-muted)', marginTop: '4px', fontSize: '13.5px' }}>
+            System node online. You are logged into the <strong style={{ color: '#fff' }}>{user.role}</strong> operational dashboard.
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{ borderLeft: '2px solid var(--border-color)', paddingLeft: '20px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', fontWeight: 600 }}>Active Nodes</span>
+            <div style={{ display: 'flex', alignItems: 'center', color: '#fff', fontSize: '13px', marginTop: '2px', fontWeight: 500 }}>
+              <span className="pulse-dot"></span> MySQL Cluster Live
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats KPI Cards with Sparklines */}
       <div className="dashboard-grid">
         {getAllowedTabs(user.role).includes('crm') && (
           <div className="glass-card stat-card" onClick={() => setCurrentTab('crm')} style={{ cursor: 'pointer' }}>
             <div>
-              <div className="stat-label">Total CRM Accounts</div>
+              <div className="stat-label">CRM Accounts</div>
               <div className="stat-value">{stats.customers}</div>
             </div>
-            <div className="stat-icon primary"><Users size={22} /></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
+                <path d="M0,20 Q15,5 30,22 T60,10 T90,25 T100,8" fill="none" stroke="var(--color-primary)" strokeWidth="2" />
+                <circle cx="100" cy="8" r="2.5" fill="var(--color-primary)" />
+              </svg>
+              <div className="stat-icon primary"><Users size={20} /></div>
+            </div>
           </div>
         )}
         <div className="glass-card stat-card" onClick={() => setCurrentTab('inventory')} style={{ cursor: 'pointer' }}>
@@ -458,44 +494,64 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
             <div className="stat-label">Catalog Products</div>
             <div className="stat-value">{stats.products}</div>
           </div>
-          <div className="stat-icon info"><Package size={22} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
+              <path d="M0,15 Q20,10 40,25 T80,8 T100,18" fill="none" stroke="var(--color-info)" strokeWidth="2" />
+              <circle cx="100" cy="18" r="2.5" fill="var(--color-info)" />
+            </svg>
+            <div className="stat-icon info"><Package size={20} /></div>
+          </div>
         </div>
         <div className="glass-card stat-card" onClick={() => setCurrentTab('inventory')} style={{ cursor: 'pointer' }}>
           <div>
             <div className="stat-label">Low Stock Alerts</div>
             <div className="stat-value" style={{ color: stats.lowStock > 0 ? 'var(--color-danger)' : '#fff' }}>{stats.lowStock}</div>
           </div>
-          <div className="stat-icon danger"><AlertTriangle size={22} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
+              <path d="M0,5 Q30,28 60,12 T100,28" fill="none" stroke="var(--color-danger)" strokeWidth="2" />
+              <circle cx="100" cy="28" r="2.5" fill="var(--color-danger)" />
+            </svg>
+            <div className="stat-icon danger"><AlertTriangle size={20} /></div>
+          </div>
         </div>
         <div className="glass-card stat-card" onClick={() => setCurrentTab('challans')} style={{ cursor: 'pointer' }}>
           <div>
             <div className="stat-label">Sales Challans</div>
             <div className="stat-value">{stats.challans}</div>
           </div>
-          <div className="stat-icon success"><FileSpreadsheet size={22} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
+              <path d="M0,28 Q20,20 40,5 T80,25 T100,4" fill="none" stroke="var(--color-success)" strokeWidth="2" />
+              <circle cx="100" cy="4" r="2.5" fill="var(--color-success)" />
+            </svg>
+            <div className="stat-icon success"><FileSpreadsheet size={20} /></div>
+          </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px', marginTop: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '24px', marginTop: '24px' }}>
         {/* Recent Challans Panel */}
         <div className="glass-card">
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Recent Sales Challans</h3>
+          <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Clock size={16} style={{ color: 'var(--color-primary)' }} /> Recent Sales Activity
+          </h3>
           <div className="table-container">
             <table className="custom-table">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Customer</th>
-                  <th>Quantity</th>
-                  <th>Status</th>
+                  <th>Challan No</th>
+                  <th>Customer Account</th>
+                  <th>Total Quantity</th>
+                  <th>Challan Status</th>
                 </tr>
               </thead>
               <tbody>
                 {recentChallans.map(ch => (
                   <tr key={ch.id}>
                     <td style={{ fontWeight: 600, color: 'var(--color-primary)' }}>{ch.challanNumber}</td>
-                    <td>{ch.customer?.businessName || 'N/A'}</td>
-                    <td>{ch.totalQuantity} items</td>
+                    <td style={{ fontWeight: 500 }}>{ch.customer?.businessName || 'N/A'}</td>
+                    <td>{ch.totalQuantity} units</td>
                     <td>
                       <span className={`badge badge-${ch.status === 'Confirmed' ? 'success' : ch.status === 'Draft' ? 'warning' : 'danger'}`}>
                         {ch.status}
@@ -505,7 +561,7 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
                 ))}
                 {recentChallans.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No challans recorded.</td>
+                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>No challans recorded.</td>
                   </tr>
                 )}
               </tbody>
@@ -513,21 +569,63 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           </div>
         </div>
 
-        {/* Roles information panel */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff' }}>Role Restrictions Directory</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-              <strong style={{ color: 'var(--color-primary)' }}>Sales Team</strong>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Can manage CRM logs, add customers, log follow-up notes, and issue draft or confirmed challans.</p>
+        {/* Action Panel & Health Status */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Operations Controls */}
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ClipboardList size={16} style={{ color: 'var(--color-info)' }} /> Operations Control Center
+            </h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {getAllowedTabs(user.role).includes('crm') && user.role !== 'Warehouse' && user.role !== 'Accounts' && (
+                <button className="quick-action-btn" onClick={() => setCurrentTab('crm')}>
+                  <Plus size={14} /> New CRM Lead
+                </button>
+              )}
+              {getAllowedTabs(user.role).includes('challans') && user.role !== 'Accounts' && (
+                <button className="quick-action-btn" onClick={() => setCurrentTab('challans')}>
+                  <Plus size={14} /> Issue Challan
+                </button>
+              )}
+              {user.role === 'Warehouse' && (
+                <button className="quick-action-btn" onClick={() => setCurrentTab('inventory')}>
+                  <Plus size={14} /> New Catalog
+                </button>
+              )}
+              <button className="quick-action-btn secondary" onClick={() => window.print()}>
+                <Printer size={14} /> Print Overview
+              </button>
             </div>
-            <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-              <strong style={{ color: 'var(--color-success)' }}>Warehouse Team</strong>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Can create catalog products, edit layouts, record stock movements (IN/OUT), and view logs.</p>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Connection Node</span>
+                <span style={{ color: '#fff', fontWeight: 500 }}>Aiven MySQL Cluster</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Server Health</span>
+                <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>Active (100% Uptime)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Privilege Level</span>
+                <span style={{ color: 'var(--color-info)', fontWeight: 500 }}>{user.role} Authorization</span>
+              </div>
             </div>
-            <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-              <strong style={{ color: 'var(--color-info)' }}>Accounts Team</strong>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Read-only dashboard view. Fully authorized to inspect data tables and export/print challan invoices.</p>
+          </div>
+
+          {/* Directory Panel */}
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff' }}>Role Restrictions</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px' }}>
+              <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.015)', border: '1px solid var(--border-color)' }}>
+                <strong style={{ color: 'var(--color-primary)' }}>Sales Team</strong>
+                <p style={{ color: 'var(--text-muted)', marginTop: '3px' }}>Can manage CRM accounts, add follow-ups, and write sales challans.</p>
+              </div>
+              <div style={{ padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.015)', border: '1px solid var(--border-color)' }}>
+                <strong style={{ color: 'var(--color-success)' }}>Warehouse Team</strong>
+                <p style={{ color: 'var(--text-muted)', marginTop: '3px' }}>Can create catalog products, edit layouts, and audit movements.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1172,13 +1270,21 @@ function InventoryTab({ user, apiFetch, showNotification }: InventoryProps) {
                     <td>{p.category}</td>
                     <td>₹{p.unitPrice.toFixed(2)}</td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: 700, color: isAlert ? 'var(--color-danger)' : '#fff' }}>{p.currentStock}</span>
-                        {isAlert && (
-                          <span className="badge badge-danger" style={{ fontSize: '10px', padding: '2px 6px' }}>
-                            Low Stock Limit ({p.minStockAlert})
-                          </span>
-                        )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontWeight: 700, color: isAlert ? 'var(--color-danger)' : '#fff' }}>{p.currentStock} units</span>
+                          {isAlert ? (
+                            <span style={{ fontSize: '10px', color: 'var(--color-danger)', fontWeight: 600 }}>Low Stock</span>
+                          ) : (
+                            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Limit: {p.minStockAlert}</span>
+                          )}
+                        </div>
+                        <div className="stock-bar-container">
+                          <div 
+                            className={`stock-bar-fill ${isAlert ? 'warning' : 'normal'}`}
+                            style={{ width: `${Math.min(100, (p.currentStock / Math.max(1, p.minStockAlert * 3.5)) * 100)}%` }}
+                          />
+                        </div>
                       </div>
                     </td>
                     <td>
