@@ -110,6 +110,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
 
   // --- API Fetch Helper ---
   const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
@@ -199,9 +200,55 @@ export default function App() {
           <h1 className="header-title" style={{ textTransform: 'capitalize', fontSize: '24px' }}>{currentTab} Portal</h1>
           <div className="header-actions">
             {/* Notification Bell Widget */}
-            <div className="notification-bell" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }} title="Operational Notifications">
-              <Bell size={18} style={{ color: 'var(--text-muted)' }} />
+            <div className="notification-bell" 
+              onClick={() => setShowNotificationsDropdown(!showNotificationsDropdown)}
+              style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }} 
+              title="Operational Notifications">
+              <Bell size={18} style={{ color: showNotificationsDropdown ? 'var(--color-primary)' : 'var(--text-muted)' }} />
               <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-danger)', boxShadow: '0 0 8px var(--color-danger)' }}></span>
+              
+              {/* Floating Notifications Dropdown */}
+              {showNotificationsDropdown && (
+                <div className="glass-card" style={{
+                  position: 'absolute',
+                  top: '48px',
+                  right: '0',
+                  width: '320px',
+                  zIndex: 2000,
+                  padding: '16px',
+                  borderRadius: '12px',
+                  cursor: 'default',
+                  border: '1px solid var(--border-color)',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+                  animation: 'fadeIn 0.2s',
+                  textAlign: 'left'
+                }} onClick={e => e.stopPropagation()}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)' }}>
+                    <span style={{ fontWeight: 600, color: '#fff', fontSize: '13.5px' }}>Operational Logs</span>
+                    <span style={{ fontSize: '10px', color: 'var(--color-primary)', fontWeight: 600, cursor: 'pointer' }} onClick={() => setShowNotificationsDropdown(false)}>Dismiss</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '12px' }}>
+                      <div style={{ color: '#f87171', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        ⚠️ Low Stock Warning
+                      </div>
+                      <div style={{ color: 'var(--text-muted)' }}>Synthetic Lacquer Gloss is below safety levels (12/15 items).</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '12px', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '8px' }}>
+                      <div style={{ color: '#34d399', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        ✔ Invoice Confirmed
+                      </div>
+                      <div style={{ color: 'var(--text-muted)' }}>Challan CH-2026-0002 has been confirmed by Aditya.</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '12px', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '8px' }}>
+                      <div style={{ color: 'var(--color-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        ℹ CRM Ledger Interaction
+                      </div>
+                      <div style={{ color: 'var(--text-muted)' }}>Sonal logged a customer follow-up interaction notes.</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* User Profile Pill Widget */}
