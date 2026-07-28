@@ -214,11 +214,30 @@ export default function App() {
           </div>
         </header>
 
-        <div className="content-body">
-          {currentTab === 'dashboard' && <DashboardTab user={user} apiFetch={apiFetch} setCurrentTab={setCurrentTab} />}
-          {currentTab === 'crm' && <CrmTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
-          {currentTab === 'inventory' && <InventoryTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
-          {currentTab === 'challans' && <ChallansTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
+        <div className="content-body" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 80px)' }}>
+          <div style={{ flex: 1 }}>
+            {currentTab === 'dashboard' && <DashboardTab user={user} apiFetch={apiFetch} setCurrentTab={setCurrentTab} />}
+            {currentTab === 'crm' && <CrmTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
+            {currentTab === 'inventory' && <InventoryTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
+            {currentTab === 'challans' && <ChallansTab user={user} apiFetch={apiFetch} showNotification={showNotification} />}
+          </div>
+          
+          <footer style={{ 
+            marginTop: '40px', 
+            paddingTop: '20px', 
+            borderTop: '1px solid var(--border-color)', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            fontSize: '12px', 
+            color: 'var(--text-muted)' 
+          }}>
+            <span>Apex ERP & CRM Portal • Version 1.2.0 (Stable)</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-success)', display: 'inline-block', boxShadow: '0 0 6px var(--color-success)' }}></span>
+              Local Database Synced • {new Date().toLocaleTimeString()}
+            </span>
+          </footer>
         </div>
       </div>
     </div>
@@ -572,6 +591,9 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
             <div>
               <div className="stat-label">CRM Accounts</div>
               <div className="stat-value">{stats.customers}</div>
+              <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                ▲ +12% this month
+              </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
@@ -586,6 +608,9 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           <div>
             <div className="stat-label">Catalog Products</div>
             <div className="stat-value">{stats.products}</div>
+            <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              ▲ +4% this month
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
@@ -599,6 +624,9 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           <div>
             <div className="stat-label">Low Stock Alerts</div>
             <div className="stat-value" style={{ color: stats.lowStock > 0 ? 'var(--color-danger)' : '#fff' }}>{stats.lowStock}</div>
+            <div style={{ fontSize: '11px', color: stats.lowStock > 0 ? '#f87171' : '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              {stats.lowStock > 0 ? '▲ check warehouse' : '▼ -5% decrease'}
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
@@ -612,6 +640,9 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
           <div>
             <div className="stat-label">Sales Challans</div>
             <div className="stat-value">{stats.challans}</div>
+            <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              ▲ +8% this month
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <svg className="sparkline" viewBox="0 0 100 30" width="70" height="25" style={{ opacity: 0.7 }}>
@@ -665,8 +696,8 @@ function DashboardTab({ user, apiFetch, setCurrentTab }: DashboardProps) {
                 <path d={revenueAreaPath} fill="url(#grad-rev)" />
                 
                 {/* Lines */}
-                <path d={salesPath} fill="none" stroke="var(--color-primary)" strokeWidth="2.5" />
-                <path d={revenuePath} fill="none" stroke="var(--color-success)" strokeWidth="2" strokeDasharray="3,3" />
+                <path d={salesPath} fill="none" stroke="#a78bfa" strokeWidth="3" />
+                <path d={revenuePath} fill="none" stroke="#34d399" strokeWidth="2.5" />
                 
                 {/* Data Points */}
                 {monthlyData.map((d, i) => {

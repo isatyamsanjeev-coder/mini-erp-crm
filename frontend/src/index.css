@@ -129,15 +129,18 @@ body {
   text-decoration: none;
 }
 
-.menu-item:hover, .menu-item.active {
+.menu-item:hover {
   color: #fff;
   background-color: rgba(255, 255, 255, 0.05);
 }
 
 .menu-item.active {
-  background: linear-gradient(to right, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.02));
-  border-left: 3px solid var(--color-primary);
-  padding-left: 13px;
+  color: #fff;
+  background: linear-gradient(to right, rgba(139, 92, 246, 0.16), rgba(139, 92, 246, 0.02));
+  border-left: 4px solid var(--color-primary);
+  padding-left: 12px;
+  font-weight: 600;
+  box-shadow: inset 4px 0 10px -4px rgba(139, 92, 246, 0.3);
 }
 
 .sidebar-footer {
@@ -228,7 +231,7 @@ body {
 .glass-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 28px;
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(10px);
@@ -269,11 +272,11 @@ body {
 }
 
 .stat-value {
-  font-size: 34px;
-  font-weight: 800;
+  font-size: 38px;
+  font-weight: 900;
   color: #fff;
-  margin-top: 8px;
-  letter-spacing: -0.02em;
+  margin-top: 6px;
+  letter-spacing: -0.03em;
 }
 
 .stat-label {
